@@ -46,3 +46,4 @@ print (tree.search(6))
 # Test print_tree
 # Should be 1-2-4-5-3
 print (tree.print_tree())
+print('End')
