@@ -38,11 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'playground'
-    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,11 +83,11 @@ WSGI_APPLICATION = 'storefront.wsgi.application'
 DATABASES = {
     'default': {
         
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'Sample',
-        # 'USER':'postgres',
-        # 'PASSWORD':'siddhant123',
-        # 'HOST':'localhost'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Sample',
+        'USER':'postgres',
+        'PASSWORD':'siddhant123',
+        'HOST':'localhost'
     }
 }
 

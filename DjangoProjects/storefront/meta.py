@@ -13,12 +13,10 @@ class Actor(models.Model):
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
     last_update = models.DateTimeField()
-    # mid_name = models.CharField(max_length=45,null=True)
-    # test_name = models.CharField(max_length=55,null=True)
 
     class Meta:
-#        managed = True
-        db_table = 'actors'
+        managed = False
+        db_table = 'actor'
 
 
 class Address(models.Model):
