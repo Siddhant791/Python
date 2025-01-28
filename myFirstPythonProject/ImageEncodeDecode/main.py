@@ -1,64 +1,78 @@
 import base64
-from PIL import Image
-from io import BytesIO
+import zlib
 
-def encode_image(image_path, target_size=(200,200), quality=100,output_file="encoded_data.txt"):
+def encode_image_with_compression(image_path, output_file="compressed_encoded_image.txt"):
     """
-    Encode an image into a very small data stream.
+    Compress and encode an image into a Base64 string and save it to a file.
 
     Args:
-        image_path (str): Path to the image file.
-        target_size (tuple): Desired size of the image (width, height).
-        quality (int): Quality of the image (1 to 100, lower means more compression).
-
-    Returns:
-        str: Base64-encoded string of the compressed image.
-    """
-    # Open the image
-    with Image.open(image_path) as img:
-        # Resize the image using LANCZOS resampling
-        img = img.resize(target_size, Image.Resampling.LANCZOS)
-
-        # Convert the image to a compressed byte stream
-        byte_stream = BytesIO()
-        img.save(byte_stream, format='JPEG', quality=quality)  # Compress the image
-        byte_stream.seek(0)
-
-        # Encode the byte stream to Base64
-        base64_string = base64.b64encode(byte_stream.read()).decode('utf-8')
-        with open(output_file, "w") as file:
-            file.write(base64_string)
-
-    return base64_string
-
-
-def decode_image(base64_string, output_path):
-    """
-    Decode a Base64 string back into an image.
-
-    Args:
-        base64_string (str): Base64-encoded string of the image.
-        output_path (str): Path to save the decoded image.
+        image_path (str): Path to the original image file.
+        output_file (str): Path to save the compressed Base64 string.
 
     Returns:
         None
     """
-    # Decode the Base64 string into bytes
-    image_data = base64.b64decode(base64_string)
+    # Read the original image as binary data
+    with open(image_path, "rb") as img_file:
+        image_data = img_file.read()
 
-    # Write the decoded bytes to an image file
-    with open(output_path, 'wb') as output_file:
+    # Compress the binary data using zlib
+    compressed_data = zlib.compress(image_data)
+
+    # Encode the compressed data to Base64
+    base64_string = base64.b64encode(compressed_data).decode('utf-8')
+
+    # Write the Base64 string to a file
+    with open(output_file, "w") as encoded_file:
+        encoded_file.write(base64_string)
+
+    print(f"Compressed and encoded image data saved to: {output_file}")
+    print(f"Original size: {len(image_data)} bytes")
+    print(f"Compressed size: {len(compressed_data)} bytes")
+    print(f"Encoded size: {len(base64_string)} characters")
+
+
+def decode_image_with_compression(encoded_file, output_image_path):
+    """
+    Decode and decompress a Base64 string from a file to reconstruct the original image.
+
+    Args:
+        encoded_file (str): Path to the file containing the Base64-encoded compressed data.
+        output_image_path (str): Path to save the reconstructed image.
+
+    Returns:
+        None
+    """
+    # Read the Base64 string from the file
+    with open(encoded_file, "r") as encoded_file:
+        base64_string = encoded_file.read()
+
+    # Decode the Base64 string into compressed binary data
+    compressed_data = base64.b64decode(base64_string)
+
+    # Decompress the binary data to recover the original image data
+    image_data = zlib.decompress(compressed_data)
+
+    # Write the original image data to the output file
+    with open(output_image_path, "wb") as output_file:
         output_file.write(image_data)
+
+    print(f"Decoded and decompressed image saved to: {output_image_path}")
 
 
 # Example usage
 if __name__ == "__main__":
-    # Encode the image
+    # Path to the original image
     image_path = "Test.jpeg"
-    encoded_data = encode_image(image_path)
-    print("Encoded Data (First 100 characters):", encoded_data[:100], "...")
 
-    # Decode the image
-    output_path = "decoded_image.jpg"
-    decode_image(encoded_data, output_path)
-    print(f"Decoded image saved at: {output_path}")
+    # File to store the compressed and encoded data
+    encoded_file = "compressed_encoded_image.txt"
+
+    # Path to save the decoded image
+    decoded_image_path = "decoded_image.jpg"
+
+    # Encode the image with compression
+    encode_image_with_compression(image_path, encoded_file)
+
+    # Decode the image back to its original form
+    decode_image_with_compression(encoded_file, decoded_image_path)
