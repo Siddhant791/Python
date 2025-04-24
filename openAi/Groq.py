@@ -22,6 +22,26 @@ def divide(a: float, b: float) -> float:
         return "Error: Division by zero"
     return a / b
 
+import os
+from pathlib import Path
+
+@tool
+def read_folder_files(folder_path: str = "./documents") -> str:
+    """Reads all files in specified folder and returns their content as context."""
+    all_content = []
+    try:
+        for file_path in Path(folder_path).glob("*"):
+            if file_path.is_file():
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        content = file.read()
+                        all_content.append(f"Content of {file_path.name}:\n{content}\n")
+                except Exception as e:
+                    all_content.append(f"Error reading {file_path.name}: {str(e)}")
+        return "\n".join(all_content)
+    except Exception as e:
+        return f"Error accessing folder: {str(e)}"
+
 @tool
 def homily() -> str:
     """This function gives description of homily company"""
@@ -46,13 +66,13 @@ def harish():
 
 
 # 2. Initialize Groq client with current model
-groq_api_key = "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"
+groq_api_key = "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"
 model = ChatGroq(
     temperature=0,
     # model_name="llama3-70b-8192",
     model_name="gemma2-9b-it",
     groq_api_key=groq_api_key
-).bind_tools([add, multiply, divide, homily, harish,siddhant])
+).bind_tools([add, multiply, divide, homily, harish, siddhant, read_folder_files])
 
 # 3. Define State with proper message handling
 class AgentState(TypedDict):
@@ -112,7 +132,7 @@ app = workflow.compile()
 
 # 6. Run with recursion limit config
 result = app.invoke(
-    {"messages": [HumanMessage(content="What's the maritial status of harish and kids")]},
+    {"messages": [HumanMessage(content="First read our documents folder at './documents', then tell me the variable name of map")]},
     {"recursion_limit": 100}  # Increased limit for complex calculations
 )
 
