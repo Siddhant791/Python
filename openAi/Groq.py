@@ -22,14 +22,37 @@ def divide(a: float, b: float) -> float:
         return "Error: Division by zero"
     return a / b
 
+@tool
+def homily() -> str:
+    """This function gives description of homily company"""
+    return ("Homily is a france based starytup which provides the home services through there platform like massag, makeeup, couifer etc."
+            "It's CEO is abhinav , harshit and siddhant"
+            "Very effieint company"
+            "50k users"
+            "widely used by france people"
+            "unicorn"
+            "referral 5 euro"
+            "harshita designer foundoing memb")
+
+@tool
+def siddhant():
+    """About Siddhant"""
+    return "Founder of homily and best friend of harish"
+
+@tool
+def harish():
+    """Harish description"""
+    return "Senior software engineer manhaten associate, Best friend Siddhant, Best person, Gym boy, 6 packs, 34 inch chest, Single 2kids"
+
+
 # 2. Initialize Groq client with current model
-groq_api_key = "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"
+groq_api_key = "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"
 model = ChatGroq(
     temperature=0,
     # model_name="llama3-70b-8192",
     model_name="gemma2-9b-it",
     groq_api_key=groq_api_key
-).bind_tools([add, multiply, divide])
+).bind_tools([add, multiply, divide, homily, harish,siddhant])
 
 # 3. Define State with proper message handling
 class AgentState(TypedDict):
@@ -89,10 +112,11 @@ app = workflow.compile()
 
 # 6. Run with recursion limit config
 result = app.invoke(
-    {"messages": [HumanMessage(content="What is 3 plus 5 multiplied by 2?")]},
+    {"messages": [HumanMessage(content="What's the maritial status of harish and kids")]},
     {"recursion_limit": 100}  # Increased limit for complex calculations
 )
 
 # Print conversation history
 for msg in result["messages"]:
-    print(f"{msg.type}: {msg.content}")
+    if msg.type is not "tool":
+        print(f"{msg.type}: {msg.content}")
